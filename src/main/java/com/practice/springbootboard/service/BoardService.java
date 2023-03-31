@@ -4,6 +4,10 @@ import com.practice.springbootboard.dto.BoardDTO;
 import com.practice.springbootboard.entity.BoardEntity;
 import com.practice.springbootboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -55,5 +59,18 @@ public class BoardService {
 
     public void delete(Long id) {
         boardRepository.deleteById(id);
+    }
+
+    public Page<BoardDTO> paging(Pageable pageable) {
+        // 실제 사용자가 요청한 값으로 부터 1 을 뺀 값으로 시작한다. 왜냐하면 Page 는 0 부터 시작.
+        int page = pageable.getPageNumber() - 1;
+        int pageLimit = 3; // 한 페이지에 보여줄 글 개수
+        // 한 페이지 당 3개씩 게시물을 보여주고 정렬 기준은 id 값을 기준으로 내림차순이다.
+        Page<BoardEntity> boardEntities =
+                boardRepository.findAll(PageRequest.of(page, pageLimit, Sort.by(Sort.Direction.DESC, "id")));
+
+        // 목록 : id, writer, title, hits, createdTime
+        return boardEntities.map(board -> new BoardDTO(board.getId(), board.getBoardWriter(),
+                board.getBoardTitle(), board.getBoardHits(), board.getCreatedTime()));
     }
 }
