@@ -40,12 +40,13 @@ public class BoardController {
     }
 
     @GetMapping("/{id}")
-    public String findById(@PathVariable Long id, Model model) {
+    public String findById(@PathVariable Long id, Model model, @PageableDefault(page = 1) Pageable pageable) {
         // 해당 게시글의 조회수를 하나 올리고
         // 게시글의 데이터를 가져와서 detail.html 에 출력
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
         model.addAttribute("board", boardDTO);
+        model.addAttribute("page", pageable.getPageNumber());
         return "detail";
     }
 
