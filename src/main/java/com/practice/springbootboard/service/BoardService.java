@@ -22,8 +22,15 @@ public class BoardService {
     private final BoardRepository boardRepository;
 
     public void save(BoardDTO boardDTO) {
-        BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
-        boardRepository.save(boardEntity);
+        // 파일 첨부 여부에 따라서 로직을 분리해야 된다.
+
+        if (boardDTO.getBoardFile().isEmpty()) { // 파일이 없는 경우
+            BoardEntity boardEntity = BoardEntity.toSaveEntity(boardDTO);
+            boardRepository.save(boardEntity);
+        } else { // 파일이 있는 경우
+
+        }
+
     }
 
     public List<BoardDTO> findAll() {

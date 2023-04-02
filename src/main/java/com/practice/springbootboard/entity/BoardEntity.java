@@ -31,13 +31,18 @@ public class BoardEntity extends BaseEntity {
     @Column
     private long boardHits;
 
-    public static BoardEntity toSaveEntity(BoardDTO boardDTO) {
+    @Column
+    private int fileAttached; // 1 or 0
+
+    public static BoardEntity toSaveEntity(BoardDTO boardDTO) { // 파일이 없는 경우의 save 메소드로 활용 됨
         BoardEntity boardEntity = new BoardEntity();
         boardEntity.setBoardWriter(boardDTO.getBoardWriter());
         boardEntity.setBoardPass(boardDTO.getBoardPass());
         boardEntity.setBoardTitle(boardDTO.getBoardTitle());
         boardEntity.setBoardContents(boardDTO.getBoardContents());
         boardEntity.setBoardHits(0);
+        boardEntity.setFileAttached(0); // 파일 없음
+
         return boardEntity;
     }
 
