@@ -2,6 +2,8 @@ package com.practice.springbootboard.service;
 
 import com.practice.springbootboard.dto.BoardDTO;
 import com.practice.springbootboard.entity.BoardEntity;
+import com.practice.springbootboard.entity.BoardFileEntity;
+import com.practice.springbootboard.repository.BoardFileRepository;
 import com.practice.springbootboard.repository.BoardRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -23,6 +25,7 @@ import java.util.Optional;
 public class BoardService {
 
     private final BoardRepository boardRepository;
+    private final BoardFileRepository boardFileRepository;
 
     public void save(BoardDTO boardDTO) throws IOException {
         // 파일 첨부 여부에 따라서 로직을 분리해야 된다.
@@ -44,13 +47,17 @@ public class BoardService {
             String originalFilename = boardFile.getOriginalFilename(); // 2
             String storedFileName = System.currentTimeMillis() + "_" + originalFilename; // 3
             String savePath = "/Users/sungwook/image/" + storedFileName; // 4 C:/springboot_img/9802398403948_내사진.jpg
-            boardFile.transferTo(new File(savePath)); // 5
-
-
+            boardFile.transferTo(new File(savePath)); // 5.
+            BoardEntity boardEntity = BoardEntity.toSaveFileEntity(boardDTO);
+            Long savedId = boardRepository.save(boardEntity).getId();
+            BoardEntity board = boardRepository.findById(savedId).get();
+            BoardFileEntity boardFileEntity = BoardFileEntity.toBoardFileEntity(board, originalFilename, storedFileName);
+            boardFileRepository.save(boardFileEntity);
         }
 
     }
 
+    @Transactional
     public List<BoardDTO> findAll() {
         List<BoardEntity> boardEntityList = boardRepository.findAll();
         List<BoardDTO> boardDTOList = new ArrayList<>();
@@ -66,6 +73,7 @@ public class BoardService {
         boardRepository.updateHits(id);
     }
 
+    @Transactional
     public BoardDTO findById(Long id) {
         Optional<BoardEntity> optionalBoardEntity = boardRepository.findById(id);
         if (optionalBoardEntity.isPresent()) {
