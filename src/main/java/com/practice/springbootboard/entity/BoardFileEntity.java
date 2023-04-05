@@ -21,6 +21,9 @@ public class BoardFileEntity extends BaseEntity {
     @Column
     private String storedFileName;
 
+    /*
+    board 와 boardFile 의 관계 = 1:N boardFile 의 기준으로 ManyToOne
+     */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "board_id")
     private BoardEntity boardEntity;
