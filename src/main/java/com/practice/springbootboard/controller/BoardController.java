@@ -1,7 +1,9 @@
 package com.practice.springbootboard.controller;
 
 import com.practice.springbootboard.dto.BoardDTO;
+import com.practice.springbootboard.dto.CommentDTO;
 import com.practice.springbootboard.service.BoardService;
+import com.practice.springbootboard.service.CommentService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,6 +21,7 @@ import java.util.List;
 public class BoardController {
 
     private final BoardService boardService;
+    private final CommentService commentService;
 
     @GetMapping("/save")
     public String saveForm() {
@@ -46,6 +49,10 @@ public class BoardController {
         // 게시글의 데이터를 가져와서 detail.html 에 출력
         boardService.updateHits(id);
         BoardDTO boardDTO = boardService.findById(id);
+        /* 댓글 목록 가져오기 */
+        List<CommentDTO> commentDTOList = commentService.findAll(id);
+        model.addAttribute("commentList", commentDTOList);
+
         model.addAttribute("board", boardDTO);
         model.addAttribute("page", pageable.getPageNumber());
         return "detail";
